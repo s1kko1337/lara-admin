@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+
+  php-fpm:
+    image: ${REGISTRY}/${INDEX}-php-fpm:${IMAGE_TAG}
+    volumes:
+      - ./:/var/www/html
+
+  php-cli:
+    image: ${REGISTRY}/${INDEX}-php-cli:${IMAGE_TAG}
+    volumes:
+      - ./:/app
+
+  nginx:
+    image: ${REGISTRY}/${INDEX}-nginx:${IMAGE_TAG}
+    ports:
+      - ${APP_WEB_PORT}:80
+      - 6001:6001
+    volumes:
+      - ./:/var/www/html
+
+  app-nodejs:
+    image: ${REGISTRY}/${INDEX}-nodejs:${IMAGE_TAG}
+    restart: "unless-stopped"
+    environment:
+      MODE: '${ENV}'
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "2"
+        max-size: "25m"
+    ports:
+      - 8000:8000
+    entrypoint: /bin/sh
+    working_dir: /srv/app
+    volumes:
+      - type: bind
+        source: ./
+        target: /srv/app
+    tty: true
