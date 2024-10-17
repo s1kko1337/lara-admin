@@ -153,7 +153,6 @@ public function updatePortfolio(Request $request)
     return redirect()->route('user.profile')->with('success', 'Портфолио обновлено успешно');
 }
 
-
 }
 
 

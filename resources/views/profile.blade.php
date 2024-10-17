@@ -7,7 +7,8 @@
 <div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px; width: 85%; max-width: 600px; margin-left: auto; margin-right: auto;">
 
     <h2 class="mb-2">Управление профилем</h2>
-    <a href="{{ route('user.profile.editPortfolio') }}" class="btn btn-secondary">Редактировать Портфолио</a>
+    <a href="{{ route('user.profile.editPortfolio') }}" class="btn btn-secondary mb-2">Редактировать Портфолио</a>
+    <a href="{{ route('user.file.get') }}" class="btn btn-secondary mb-2">Загрузить модель</a>
 
     <table class="table mb-1">
       <tr>

@@ -10,7 +10,7 @@
         <h5 class="card-title">Загрузка файла</h5>
     </div>
     <div class="card-body">
-        <form id="uploadForm" enctype="multipart/form-data" method="POST" action="{{ route('user.upload') }}">
+        <form id="uploadForm" enctype="multipart/form-data" method="POST" action="{{ route('user.file.upload') }}">
             @csrf
             <div class="form-group">
                 <label for="fileInput">Выберите файл</label>
@@ -56,7 +56,7 @@
 
         const formData = new FormData(this);
 
-        fetch('{{ route('user.upload') }}', {
+        fetch('{{ route('user.file.upload') }}', {
             method: 'POST',
             body: formData
         })

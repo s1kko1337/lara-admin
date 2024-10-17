@@ -17,7 +17,6 @@ Route::name('user.')->group(function(){
     Route::get('/profile/edit-portfolio', [ProfileController::class, 'editPortfolio'])->middleware('auth')->name('profile.editPortfolio');
     Route::post('/profile/update-portfolio', [ProfileController::class, 'updatePortfolio'])->middleware('auth')->name('profile.updatePortfolio');
 
-
     Route::get('/admintables', [ AdminTablesController::class, 'showTables'])->middleware('auth')->name('admintables');
     Route::get('/admintables/{tableName}/edit', [AdminTablesController::class, 'editTable'])->middleware('auth')->name('admintables.edit');
     Route::put('/admintables/{tableName}/update/{id}', [AdminTablesController::class, 'updateTable'])->middleware('auth')->name('admintables.update');
@@ -39,7 +38,10 @@ Route::name('user.')->group(function(){
      });
 
     Route::get('home/check-ftp', [FileUploadController::class, 'checkFtpConnection'])->name('check.ftp');
-    Route::post('home/upload', [FileUploadController::class, 'upload'])->name('upload');
+    Route::post('profile/upload', [FileUploadController::class, 'upload'])->middleware('auth')->name('file.upload');
+    Route::get('profile/get', [FileUploadController::class, 'get'])->middleware('auth')->name('file.get');
+    Route::get('profile/models', [FileUploadController::class, 'listModels'])->middleware('auth')->name('file.listModels');
+    Route::delete('profile/models/delete/{id}', [FileUploadController::class, 'deleteModel'])->middleware('auth')->name('file.deleteModel');
 
 
     Route::get('/', function(){
