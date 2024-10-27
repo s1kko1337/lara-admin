@@ -13,7 +13,7 @@ class AdminTablesController extends Controller
         'users' => 'Пользователи',
         'portfolios' => 'Портфолио',
         'works' => 'Работы',
-        'messages_stat' => 'Статистика по заявкам',
+        'messages_stat' => 'Сообщения',
     ];
 
    public function showTables(){
@@ -30,7 +30,7 @@ class AdminTablesController extends Controller
                 'users' => ['id','username','email'],
                 'portfolios' => ['id','main_info','additional_info','media_links'],
                 'works' =>  ['modeler_id','path_to_model','additional_info'],
-                'messages_stat' => ['id','message_body','email','id_user'],
+                'messages_stat' => ['id','message_text','chat_id','chat_status','chat_article','id_user'],
             ];
     
             $tableId = $this->getTableIdColumn($tableName);
@@ -67,7 +67,7 @@ class AdminTablesController extends Controller
             'users' => ['id','username','email'],
             'portfolios' => ['id','main_info','additional_info','media_links'],
             'works' =>  ['modeler_id','path_to_model','additional_info'],
-            'messages_stat' => ['message_body','email','id_user'],
+            'messages_stat' => ['message_text','chat_id','chat_status','chat_article','id_user','is_admin'],
         ];
         $tableId = $editableColumns[$tableName][0];
         DB::table($tableName)->where($tableId, $id)->delete();
@@ -79,7 +79,7 @@ class AdminTablesController extends Controller
             'users' => ['id','username','email'],
             'portfolios' => ['id','main_info','additional_info','media_links'],
             'works' =>  ['modeler_id','path_to_model','additional_info'],
-            'messages_stat' => ['message_body','email','id_user'],
+            'messages_stat' =>  ['message_text','chat_id','chat_status','chat_article','id_user'],
         ];
 
         if (!array_key_exists($tableName, $editableColumns)) {
@@ -90,10 +90,7 @@ class AdminTablesController extends Controller
         foreach ($editableColumns[$tableName] as $column) {
             $updateData[$column] = $request->input($column);
         }
-        if($tableName == 'users')
-        {
-            $updateData['updated_at'] = now();
-        }
+        $updateData['updated_at'] = now();
         $tableId = $editableColumns[$tableName][0];
         DB::table($tableName)
             ->where($tableId, $id)
@@ -107,7 +104,7 @@ class AdminTablesController extends Controller
             'users' => ['id','username','email'],
             'portfolios' => ['main_info','additional_info','media_links'],
             'works' =>  ['modeler_id','path_to_model','additional_info'],
-            'messages_stat' => ['message_body','email','id_user'],
+            'messages_stat' => ['message_text','chat_id','chat_status','chat_article','id_user'],
         ];
     
         if (!array_key_exists($tableName, $editableColumns)) {

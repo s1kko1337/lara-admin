@@ -33,10 +33,13 @@
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <a href="{{ route('user.home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" aria-current="page">
-                    <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
-                    Главная
-                </a>
+            <a href="{{ route('user.chats.index') }}" class="nav-link {{ request()->routeIs('user.chats.index') ? 'active' : '' }}" aria-current="page">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+                <path d="M5 8c0 .552.224 1 .5 1s.5-.448.5-1-.224-1-.5-1-.5.448-.5 1zm3 0c0 .552.224 1 .5 1s.5-.448.5-1-.224-1-.5-1-.5.448-.5 1zm3 0c0 .552.224 1 .5 1s.5-.448.5-1-.224-1-.5-1-.5.448-.5 1z"/>
+                <path d="M14 1H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h1.586l2.707 2.707a1 1 0 0 0 1.414 0L9.414 12H14a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm0 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9.586l-3 3L3 11H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12z"/>
+            </svg>
+            Чаты
+        </a>
             </li>
             <li>
                 <a href="{{ route('user.admintables') }}" class="nav-link {{ request()->routeIs('tables') ? 'active' : '' }}">

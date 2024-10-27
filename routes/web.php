@@ -8,62 +8,62 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AdminTablesController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\ChatController;
 
+Route::name('user.')->group(function() {
+    // Маршруты для незалогиненных пользователей
+    Route::middleware('guest')->group(function() {
+        Route::get('/', function() {
+            return view('login');
+        })->name('login');
 
-Route::name('user.')->group(function(){
-    Route::get('/home', [ MainContentController::class, 'showHome'])->middleware('auth')->name('home');
-    Route::get('/profile', [ ProfileController::class, 'show'])->middleware('auth')->name('profile');
-    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->middleware('auth')->name('profile.updatePassword');
-    Route::get('/profile/edit-portfolio', [ProfileController::class, 'editPortfolio'])->middleware('auth')->name('profile.editPortfolio');
-    Route::post('/profile/update-portfolio', [ProfileController::class, 'updatePortfolio'])->middleware('auth')->name('profile.updatePortfolio');
+        Route::post('/', [LoginController::class, 'login']);
 
-    Route::get('/admintables', [ AdminTablesController::class, 'showTables'])->middleware('auth')->name('admintables');
-    Route::get('/admintables/{tableName}/edit', [AdminTablesController::class, 'editTable'])->middleware('auth')->name('admintables.edit');
-    Route::put('/admintables/{tableName}/update/{id}', [AdminTablesController::class, 'updateTable'])->middleware('auth')->name('admintables.update');
-    Route::get('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->middleware('auth')->name('admintables.add');
-    Route::post('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->middleware('auth')->name('admintables.add');
-    Route::delete('/admintables/{tableName}/delete/{id}', [AdminTablesController::class, 'destroy'])->middleware('auth')->name('admintables.delete');
+        Route::get('/registration', function() {
+            return view('register');
+        })->name('register');
 
-    Route::post('/profile/edit-name', [ProfileController::class, 'editName'])->middleware('auth')->name('profile.editName');
-    Route::post('/profile/edit-email', [ ProfileController::class, 'editEmail'])->middleware('auth')->name('profile.editEmail');
-    Route::get('/get-updated-users', [ProfileController::class, 'getUpdatedUsers'])->name('admin.get.updated.users');
+        Route::post('/registration', [RegisterController::class, 'save']);
+    });
 
-    Route::get('/user/add', [ProfileController::class, 'add'])->name('add');
-    Route::post('/user/add', [ ProfileController::class, 'saveUser'])->name('saveUser');
-    
-    Route::middleware('auth')->group(function () {
+    // Маршруты для авторизованных пользователей
+    Route::middleware('auth')->group(function() {
+        Route::get('/home', [MainContentController::class, 'showHome'])->name('home');
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+        Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+        Route::get('/profile/edit-portfolio', [ProfileController::class, 'editPortfolio'])->name('profile.editPortfolio');
+        Route::post('/profile/update-portfolio', [ProfileController::class, 'updatePortfolio'])->name('profile.updatePortfolio');
+
+        Route::get('/admintables', [AdminTablesController::class, 'showTables'])->name('admintables');
+        Route::get('/admintables/{tableName}/edit', [AdminTablesController::class, 'editTable'])->name('admintables.edit');
+        Route::put('/admintables/{tableName}/update/{id}', [AdminTablesController::class, 'updateTable'])->name('admintables.update');
+        Route::get('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->name('admintables.add');
+        Route::post('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->name('admintables.add');
+        Route::delete('/admintables/{tableName}/delete/{id}', [AdminTablesController::class, 'destroy'])->name('admintables.delete');
+
+        Route::post('/profile/edit-name', [ProfileController::class, 'editName'])->name('profile.editName');
+        Route::post('/profile/edit-email', [ProfileController::class, 'editEmail'])->name('profile.editEmail');
+        Route::get('/get-updated-users', [ProfileController::class, 'getUpdatedUsers'])->name('admin.get.updated.users');
+
+        Route::get('/user/add', [ProfileController::class, 'add'])->name('add');
+        Route::post('/user/add', [ProfileController::class, 'saveUser'])->name('saveUser');
+
         Route::get('/user/edit/{id}', [ProfileController::class, 'edit'])->name('edit');
         Route::put('/user/update/{id}', [ProfileController::class, 'update'])->name('update');
         Route::delete('/user/delete/{id}', [ProfileController::class, 'destroy'])->name('delete');
-     });
 
-    Route::get('home/check-ftp', [FileUploadController::class, 'checkFtpConnection'])->name('check.ftp');
-    Route::post('profile/upload', [FileUploadController::class, 'upload'])->middleware('auth')->name('file.upload');
-    Route::get('profile/get', [FileUploadController::class, 'get'])->middleware('auth')->name('file.get');
-    Route::get('profile/models', [FileUploadController::class, 'listModels'])->middleware('auth')->name('file.listModels');
-    Route::delete('profile/models/delete/{id}', [FileUploadController::class, 'deleteModel'])->middleware('auth')->name('file.deleteModel');
+        Route::get('home/check-ftp', [FileUploadController::class, 'checkFtpConnection'])->name('check.ftp');
+        Route::post('profile/upload', [FileUploadController::class, 'upload'])->name('file.upload');
+        Route::get('profile/get', [FileUploadController::class, 'get'])->name('file.get');
+        Route::get('profile/models', [FileUploadController::class, 'listModels'])->name('file.listModels');
+        Route::delete('profile/models/delete/{id}', [FileUploadController::class, 'deleteModel'])->name('file.deleteModel');
+        Route::get('/admin/chats', [ChatController::class, 'index'])->name('chats.index');
+        Route::get('/admin/chats/{chat_id}', [ChatController::class, 'show'])->name('chats.show');
+        Route::post('/admin/chats/{chat_id}/send', [ChatController::class, 'sendMessage'])->name('chats.send');
 
-
-    Route::get('/', function(){
-        if(Auth::check()){
-            return redirect(route('user.home'));
-        }
-        return view('login');
-    })->name(name:'login');
-
-    Route::post('/', [LoginController::class, 'login']);
-    
-    Route::get('/logout',function(){
-        Auth::logout();
-        return redirect(route('user.login'));
-    })->name('logout');
-
-    Route::get('/registration', function(){
-        if(Auth::check()){
-            return redirect(route('user.home'));
-        }
-        return view('register');
-    })->name('register');
-
-Route::post('/registration', [ RegisterController::class, 'save']);
+        Route::get('/logout', function() {
+            Auth::logout();
+            return redirect(route('user.login'));
+        })->name('logout');
+    });
 });

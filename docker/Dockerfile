@@ -28,6 +28,8 @@ COPY ./docker/php/php.ini-production $PHP_INI_DIR/php.ini
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
+RUN apk --no-cache add postgresql-dev
+
 RUN install-php-extensions opcache pdo_pgsql pgsql curl
 
 RUN apk --no-cache add bash
