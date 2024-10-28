@@ -28,11 +28,17 @@ return [
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
             'path' => env('PUSHER_APP_PATH'),
-            'capacity' => null,
             'enable_client_messages' => false,
             'enable_statistics' => true,
         ],
     ],
+    
+    'ssl' => [
+        'local_cert' => null,
+        'local_pk' => null,
+        'passphrase' => null,
+    ],
+
 
     /*
      * This class is responsible for finding the apps. The default provider
@@ -109,26 +115,6 @@ return [
      * Define the optional SSL context for your WebSocket connections.
      * You can see all available options at: http://php.net/manual/en/context.ssl.php
      */
-    'ssl' => [
-        /*
-         * Path to local certificate file on filesystem. It must be a PEM encoded file which
-         * contains your certificate and private key. It can optionally contain the
-         * certificate chain of issuers. The private key also may be contained
-         * in a separate file specified by local_pk.
-         */
-        'local_cert' => env('LARAVEL_WEBSOCKETS_SSL_LOCAL_CERT', null),
-
-        /*
-         * Path to local private key file on filesystem in case of separate files for
-         * certificate (local_cert) and private key.
-         */
-        'local_pk' => env('LARAVEL_WEBSOCKETS_SSL_LOCAL_PK', null),
-
-        /*
-         * Passphrase for your local_cert file.
-         */
-        'passphrase' => env('LARAVEL_WEBSOCKETS_SSL_PASSPHRASE', null),
-    ],
 
     /*
      * Channel Manager

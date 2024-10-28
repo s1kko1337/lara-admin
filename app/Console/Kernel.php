@@ -10,7 +10,7 @@ class Kernel extends ConsoleKernel
      * The Artisan commands provided by your application.
      */
     protected $commands = [
-        \App\Console\Commands\TransferSuppliesToStorage::class,
+        \App\Console\Commands\ListenToPostgres::class,
     ];
 
     /**

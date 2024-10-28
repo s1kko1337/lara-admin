@@ -26,30 +26,52 @@
     </div>
 @endsection
 @section('scripts')
-    @vite('resources/js/app.js')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const chatId = {{ $messages->first()->chat_id }};
-            
-            if (window.Echo) {
-                window.Echo.channel('chat.' + chatId)
-                    .listen('ChatUpdated', (e) => {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const chatId = {{ $messages->first()->chat_id }};
+        const messageContainer = document.getElementById('message-list');
+        let lastMessageId = {{ $messages->last()->id }};
+
+        // Function to fetch new messages
+        async function fetchMessages() {
+            try {
+                const response = await fetch(`{{ route('user.chats.getMessages', ':chatId') }}`.replace(':chatId', chatId));
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const messages = await response.json();
+
+                messages.forEach(message => {
+                    if (message.id > lastMessageId) { 
+                                        const moscowTime = new Date(message.created_at).toLocaleString('ru-RU', {
+                    timeZone: 'Europe/Moscow',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
                         const messageHtml = `
-                            <li class="list-group-item d-flex justify-content-${e.is_admin ? 'end' : 'start'}">
+                            <li class="list-group-item d-flex justify-content-${message.is_admin ? 'end' : 'start'}">
                                 <div class="d-flex flex-column">
-                                    <div class="p-2" style="border-radius: 10px; background-color: ${e.is_admin ? '#d4edda' : '#f8d7da'}; max-width: 70%;">
-                                        <p class="mb-0">${e.message_text}</p>
+                                    <div class="p-2" style="border-radius: 10px; background-color: ${message.is_admin ? '#d4edda' : '#f8d7da'}; max-width: 70%;">
+                                        <p class="mb-0">${message.message_text}</p>
                                     </div>
-                                    <small class="text-muted text-end">${e.created_at}</small>
+                                    <small class="text-muted text-end">${message.created_at}</small>
                                 </div>
                             </li>
                         `;
-                        document.getElementById('message-list').insertAdjacentHTML('beforeend', messageHtml);
-                        location.reload();
-                    });
-            } else {
-                console.error('Echo is not defined');
+                        messageContainer.insertAdjacentHTML('beforeend', messageHtml);
+                        lastMessageId = message.id; 
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching messages:', error);
             }
-        });
-    </script>
+        }
+
+        setInterval(fetchMessages, 500);
+    });
+</script>
 @endsection
