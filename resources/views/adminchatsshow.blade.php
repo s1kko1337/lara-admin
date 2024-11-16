@@ -6,12 +6,14 @@
         <ul id="message-list" class="list-group mb-3">
             @foreach ($messages as $message)
                 <li class="list-group-item d-flex justify-content-{{ $message->is_admin ? 'end' : 'start' }}">
-                    <div class="d-flex flex-column">
+                      @if ( $message->message_text !== 'nullablefirstmessageforopenchat')
+                      <div class="d-flex flex-column">
                         <div class="p-2" style="border-radius: 10px; background-color: {{ $message->is_admin ? '#d4edda' : '#f8d7da' }}; max-width: 70%;">
                             <p class="mb-0">{{ $message->message_text }}</p>
                         </div>
                         <small class="text-muted text-end">{{ $message->created_at }}</small>
                     </div>
+                    @endif
                 </li>
             @endforeach
         </ul>
