@@ -4,17 +4,14 @@
 <div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px; width: 85%; max-width: 600px; margin-left: auto; margin-right: auto;">
         <h2 class="mb-4">Загрузить файл модели</h2>
 
-        <!-- Форма загрузки файла -->
         <form method="POST" enctype="multipart/form-data" action="{{ route('user.file.upload') }}">
         @csrf
 
-            <!-- Поле для загрузки файла -->
             <div class="form-group mb-3">
                 <label for="file">Выберите файл:</label>
                 <input type="file" class="form-control" id="file" name="file" required>
             </div>
 
-            <!-- Поле для описания модели -->
             <div class="form-group mb-3">
                 <label for="description">Описание модели:</label>
                 <textarea class="form-control" id="description" name="description" rows="3" required></textarea>

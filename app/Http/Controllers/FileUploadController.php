@@ -103,5 +103,17 @@ public function deleteModel($id)
     }
 }
 
+public function updateModel($id)
+{
+    $model = DB::table('works')->where('id', $id)->first();
+
+    if (!$model) {
+        return redirect()->back()->with('error', 'Модель не найдена.');
+    }
+
+    $ftpDisk = Storage::disk('ftp');
+    $remotePath = trim($model->path_to_model);
+
+}
 
 }

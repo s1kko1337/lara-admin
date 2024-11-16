@@ -15,6 +15,7 @@ class Message extends Model
         'updated_at',
         'chat_id',
         'is_admin',
+        'id',
         'chat_status',
         'message_text',
     ];

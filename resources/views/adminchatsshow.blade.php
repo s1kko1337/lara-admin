@@ -16,7 +16,7 @@
             @endforeach
         </ul>
 
-        <form action="{{ route('user.chats.send', $messages->first()->chat_id) }}" method="POST">
+        <form action="{{ route('user.chats.send', [$messages->first()->chat_id, $messages->last()->id]) }}" method="POST">
             @csrf
             <div class="input-group mb-3">
                 <textarea name="message_text" class="form-control rounded" required></textarea>
@@ -27,51 +27,56 @@
 @endsection
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const chatId = {{ $messages->first()->chat_id }};
-        const messageContainer = document.getElementById('message-list');
-        let lastMessageId = {{ $messages->last()->id }};
+ document.addEventListener('DOMContentLoaded', function () {
+    const chatId = {{ $messages->first()->chat_id }};
+    const messageContainer = document.getElementById('message-list');
+    let lastMessageId = {{ $messages->last()->id }};
+    const loadedMessageIds = new Set();
 
-        // Function to fetch new messages
-        async function fetchMessages() {
-            try {
-                const response = await fetch(`{{ route('user.chats.getMessages', ':chatId') }}`.replace(':chatId', chatId));
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const messages = await response.json();
-
-                messages.forEach(message => {
-                    if (message.id > lastMessageId) { 
-                                        const moscowTime = new Date(message.created_at).toLocaleString('ru-RU', {
-                    timeZone: 'Europe/Moscow',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                });
-                        const messageHtml = `
-                            <li class="list-group-item d-flex justify-content-${message.is_admin ? 'end' : 'start'}">
-                                <div class="d-flex flex-column">
-                                    <div class="p-2" style="border-radius: 10px; background-color: ${message.is_admin ? '#d4edda' : '#f8d7da'}; max-width: 70%;">
-                                        <p class="mb-0">${message.message_text}</p>
-                                    </div>
-                                    <small class="text-muted text-end">${message.created_at}</small>
-                                </div>
-                            </li>
-                        `;
-                        messageContainer.insertAdjacentHTML('beforeend', messageHtml);
-                        lastMessageId = message.id; 
-                    }
-                });
-            } catch (error) {
-                console.error('Error fetching messages:', error);
-            }
+    document.querySelectorAll('#message-list li').forEach((li) => {
+        const messageId = li.dataset.messageId;
+        if (messageId) {
+            loadedMessageIds.add(parseInt(messageId));
         }
-
-        setInterval(fetchMessages, 500);
     });
+
+    async function fetchNewMessages() {
+        try {
+            const response = await fetch(`{{ route('user.chats.getNewMessages', ':chatId') }}`.replace(':chatId', chatId) + `?last_message_id=${lastMessageId}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const newMessages = await response.json();
+
+            newMessages.forEach(message => {
+                if (!loadedMessageIds.has(message.id)) {
+                    // Преобразуем дату и время в нужный формат
+                    const createdAt = new Date(message.created_at);
+                    const formattedDate = `${createdAt.getFullYear()}-${String(createdAt.getMonth() + 1).padStart(2, '0')}-${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}:${String(createdAt.getSeconds()).padStart(2, '0')}`;
+
+                    const messageHtml = `
+                        <li class="list-group-item d-flex justify-content-${message.is_admin ? 'end' : 'start'}" data-message-id="${message.id}">
+                            <div class="d-flex flex-column">
+                                <div class="p-2" style="border-radius: 10px; background-color: ${message.is_admin ? '#d4edda' : '#f8d7da'}; max-width: 70%;">
+                                    <p class="mb-0">${message.message_text}</p>
+                                </div>
+                                <small class="text-muted text-end">${formattedDate}</small>
+                            </div>
+                        </li>
+                    `;
+                    messageContainer.insertAdjacentHTML('beforeend', messageHtml);
+
+                    loadedMessageIds.add(message.id);
+                    lastMessageId = message.id;
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching new messages:', error);
+        }
+    }
+
+    setInterval(fetchNewMessages, 500);
+});
+
 </script>
 @endsection

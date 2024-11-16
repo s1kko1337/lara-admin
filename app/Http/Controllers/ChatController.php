@@ -23,15 +23,16 @@ class ChatController extends Controller
     }
 
     // Метод для отображения конкретного чата
-    public function show($chat_id)
-    {
-        $messages = Message::where('chat_id', $chat_id)->orderBy('created_at')->get();
-        foreach ($messages as $message) {
-            $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('Y-m-d H:i:s');
-        }
-    
-        return view('adminchatsshow', compact('messages'));
+// Метод для отображения конкретного чата
+public function show($chat_id)
+{
+    $messages = Message::where('chat_id', $chat_id)->orderBy('created_at')->get();
+    foreach ($messages as $message) {
+        $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
     }
+
+    return view('adminchatsshow', compact('messages'));
+}
 
     // Метод для отправки сообщения от админа
     public function sendMessage(Request $request, $chat_id)
@@ -40,10 +41,14 @@ class ChatController extends Controller
             'message_text' => 'required|string',
         ]);
 
+        $id = DB::table('messages_stat')
+        ->max('id')+1;
+
         Message::create([
             'created_at' => now(),
             'id_user' => auth()->id(),
-            'is_admin' => 'true', // Если админ - пользователь
+            'is_admin' => 'true',
+            'id' => $id, 
             'chat_id' => $chat_id,
             'chat_status' => 'active',
             'message_text' => $validated['message_text'],
@@ -51,14 +56,13 @@ class ChatController extends Controller
 
         return redirect()->route('user.chats.show', $chat_id);
     }
-
+// Метод для получения сообщений в нужном формате
 public function getMessages($chatId)
 {
     $messages = Message::where('chat_id', $chatId)->latest()->get();
 
-    // Преобразуем время в московскую таймзону
     foreach ($messages as $message) {
-        $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('Y-m-d H:i:s');
+        $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
     }
 
     return response()->json($messages);
@@ -85,6 +89,22 @@ public function deleteMessage($id)
     $message->delete();
 
     return redirect()->back()->with('success', 'Сообщение удалено!');
+}
+// Метод для получения новых сообщений
+public function getNewMessages(Request $request, $chat_id)
+{
+    $lastMessageId = $request->query('last_message_id');
+
+    $newMessages = Message::where('chat_id', $chat_id)
+        ->where('id', '>', $lastMessageId)
+        ->orderBy('created_at', 'asc')
+        ->get();
+
+    foreach ($newMessages as $message) {
+        $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
+    }
+
+    return response()->json($newMessages);
 }
 
 

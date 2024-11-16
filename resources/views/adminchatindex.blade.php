@@ -4,6 +4,7 @@
     <h1>Список чатов</h1>
     <div class="row">
         @foreach ($chats as $chat)
+        @if($chat->chat_article !== null && $chat->chat_article !== 'null')
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-body">
@@ -13,6 +14,7 @@
                     </div>
                 </div>
             </div>
+        @endif
         @endforeach
     </div>
 @endsection

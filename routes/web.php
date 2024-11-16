@@ -61,6 +61,7 @@ Route::name('user.')->group(function() {
         Route::get('/admin/chats/{chat_id}', [ChatController::class, 'show'])->name('chats.show');
         Route::post('/admin/chats/{chat_id}/send', [ChatController::class, 'sendMessage'])->name('chats.send');
         Route::get('/admin/chats/{chatId}/messages', [ChatController::class, 'getMessages'])->name('chats.getMessages');
+        Route::get('/admin/chats/{chat_id}/get-new-messages', [ChatController::class, 'getNewMessages'])->name('chats.getNewMessages');
 
         Route::get('/logout', function() {
             Auth::logout();
