@@ -13,7 +13,7 @@
 <div class="container-fluid">
     <div class="row">
     <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3">
-    <div class="card rounded shadow-sm p-3"> <!-- Добавлена обертка для карточки -->
+    <div class="card shadow-lg p-4 rounded">
         <div class="dropdown mb-3">
             <button class="btn btn-light btn-secondary dropdown-toggle w-100 text-truncate" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
@@ -48,10 +48,9 @@
                 </a>
             </li>
         </ul>
-    </div> <!-- Закрываем карточку -->
+    </div> 
 </div>
 
-        
         <main class="col-md-9 col-lg-10 vh-100" style="overflow-y: auto;">
             @yield('content')
         </main>
@@ -60,6 +59,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 @yield('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -62,7 +62,11 @@ Route::name('user.')->group(function() {
         Route::post('/admin/chats/{chat_id}/send', [ChatController::class, 'sendMessage'])->name('chats.send');
         Route::get('/admin/chats/{chatId}/messages', [ChatController::class, 'getMessages'])->name('chats.getMessages');
         Route::get('/admin/chats/{chat_id}/get-new-messages', [ChatController::class, 'getNewMessages'])->name('chats.getNewMessages');
+        Route::post('/admin/chats/{chat_id}/activate', [ChatController::class, 'activate'])->name('chats.activate');
+        Route::post('/admin/chats/{chat_id}/deactivate', [ChatController::class, 'deactivate'])->name('chats.deactivate');    
+        Route::get('/admin/chats/get-updated-chats', [ChatController::class, 'getUpdatedChats'])->name('chats.getUpdatedChats');
 
+        
         Route::get('/logout', function() {
             Auth::logout();
             return redirect(route('user.login'));

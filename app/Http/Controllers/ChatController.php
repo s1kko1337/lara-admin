@@ -13,28 +13,53 @@ class ChatController extends Controller
     public function index()
     {
         $chats = DB::table('messages_stat')
-        ->select('chat_id', 'chat_article')
-        ->whereNotNull('chat_article')
-        ->groupBy('chat_id', 'chat_article')
-        ->get();
-
-        
+            ->select('chat_id', 'chat_article', 'chat_status')
+            ->whereNotNull('chat_article')
+            ->groupBy('chat_id', 'chat_article', 'chat_status')
+            ->get();
+    
         return view('adminchatindex', compact('chats'));
     }
 
-    // Метод для отображения конкретного чата
-// Метод для отображения конкретного чата
-public function show($chat_id)
-{
-    $messages = Message::where('chat_id', $chat_id)->orderBy('created_at')->get();
-    foreach ($messages as $message) {
-        $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
+    public function show($chat_id)
+    {
+        $messages = Message::where('chat_id', $chat_id)->orderBy('created_at')->get();
+        foreach ($messages as $message) {
+            $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
+        }
+
+        return view('adminchatsshow', compact('messages'));
     }
 
-    return view('adminchatsshow', compact('messages'));
-}
+    public function activate($chat_id)
+    {
+        DB::table('messages_stat')
+            ->where('chat_id', $chat_id)
+            ->update(['chat_status' => 'active']);
 
-    // Метод для отправки сообщения от админа
+        return redirect()->back();
+    }
+
+    public function deactivate($chat_id)
+    {
+        DB::table('messages_stat')
+            ->where('chat_id', $chat_id)
+            ->update(['chat_status' => 'inactive']);
+
+        return redirect()->back();
+    }
+
+    public function getUpdatedChats()
+    {
+        $chats = DB::table('messages_stat')
+            ->select('chat_id', 'chat_article', 'chat_status')
+            ->whereNotNull('chat_article')
+            ->groupBy('chat_id', 'chat_article', 'chat_status')
+            ->get();
+        
+        return response()->json($chats);
+    }
+    
     public function sendMessage(Request $request, $chat_id)
     {
         $validated = $request->validate([
@@ -56,7 +81,7 @@ public function show($chat_id)
 
         return redirect()->route('user.chats.show', $chat_id);
     }
-// Метод для получения сообщений в нужном формате
+
 public function getMessages($chatId)
 {
     $messages = Message::where('chat_id', $chatId)->latest()->get();
