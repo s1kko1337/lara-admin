@@ -8,6 +8,11 @@
         @csrf
 
             <div class="form-group mb-3">
+                <label for="description">Название модели:</label>
+                <textarea class="form-control" id="model_name" name="model_name" rows="1" required></textarea>
+            </div>
+
+            <div class="form-group mb-3">
                 <label for="file">Выберите файл:</label>
                 <input type="file" class="form-control" id="file" name="file" required>
             </div>
@@ -38,6 +43,7 @@
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Название модели</th>
                     <th>Описание</th>
                     <th>Путь к модели</th>
                     <th>Действия</th>
@@ -47,6 +53,7 @@
                 @foreach ($models as $model)
                 <tr>
                     <td>{{ $model->id }}</td>
+                    <td>{{ $model->model_name }}</td>
                     <td>{{ $model->additional_info }}</td>
                     <td>{{ $model->path_to_model }}</td>
                     <td>
@@ -55,6 +62,7 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить эту модель?')">Удалить</button>
                         </form>
+                        <a href="{{ route('user.file.editModel', $model->id) }}" class="btn btn-primary">Редактировать</a>
                     </td>
                 </tr>
                 @endforeach
