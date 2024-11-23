@@ -115,6 +115,23 @@ public function deleteMessage($id)
 
     return redirect()->back()->with('success', 'Сообщение удалено!');
 }
+
+public function deleteChat($inputChatId)
+{
+    if (empty($inputChatId)) {
+        return redirect()->route('user.chats.index')->with('error', 'Чат не найден.');
+    }
+    $chatId = filter_var($inputChatId, FILTER_SANITIZE_NUMBER_INT);
+    try {
+        // Удаляем все записи с указанным chat_id из таблицы messages_stat
+        DB::table('messages_stat')->where('chat_id', $chatId)->delete();
+
+        return redirect()->route('user.chats.index')->with('success', 'Чат успешно удален.');
+    } catch (\Exception $e) {
+        \Log::error('Ошибка удаления чата: ' . $e->getMessage());
+        return redirect()->route('user.chats.index')->with('error', 'Ошибка удаления чата: ' . $e->getMessage());
+    }
+}
 // Метод для получения новых сообщений
 public function getNewMessages(Request $request, $chat_id)
 {

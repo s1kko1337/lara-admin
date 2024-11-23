@@ -1,77 +1,144 @@
 @extends('layout')
 
 @section('content')
-<button id="checkFtpButton" class="btn btn-secondary">Проверить подключение к FTP</button>
-<div id="ftpStatus"></div>
+<div class="container" style="margin-top: 15px;">
+    <div class="row">
 
+    <div class="col-12 col-md-6">
+            <a href="{{ route('user.chats.index') }}" class="card mb-4" style="text-decoration: none; color: inherit;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Количество обращений (чатов)</h5>
+                        <p class="display-4">{{$uniqueIdCount}}</p>
+                         <div class="row">
+                         <h5 class="card-title">Активные чаты</h5>
+                         <p>{{$uniqueIdCountActive}}</p>
+                         <h5 class="card-title">Неактивные чаты</h5>
+                        <p>{{$uniqueIdCountInactive}}</p>
+                         </div>
+                    </div>
+            </a>
+        </div>
 
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title">Загрузка файла</h5>
-    </div>
-    <div class="card-body">
-        <form id="uploadForm" enctype="multipart/form-data" method="POST" action="{{ route('user.file.upload') }}">
-            @csrf
-            <div class="form-group">
-                <label for="fileInput">Выберите файл</label>
-                <input type="file" class="form-control-file" id="fileInput" name="file" required>
+        
+
+        <div class="col-12 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Статистика сообщений</h5>
+                    <div class="form-group">
+                        <label for="timeRange">Выберите промежуток времени:</label>
+                        <select id="timeRange" class="form-control">
+                            <option value="day">День</option>
+                            <option value="week">Неделя</option>
+                            <option value="month">Месяц</option>
+                            <option value="all" selected>Все время</option>
+                        </select>
+                    </div>
+                    <div id="chatStatsChart" style="width: 100%; height: 400px;"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="description">Описание</label>
-                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Статус сервера</h5>
+                    @if($ftpAvailable)
+                        <p class="text-success">Сервер доступен, можно загружать файлы.</p>
+                    @else
+                        <p class="text-danger">Сервер недоступен.</p>
+                    @endif
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Загрузить</button>
-        </form>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{route('user.file.get') }}" class="nav-link" style="text-decoration: none; color: inherit;">
+                            Загруженные модели на сервер
+                        </a>
+                    </h5>
+                    <ul class="list-group">
+                        @foreach($models as $model)
+                            <li class="list-group-item">
+                                <a href="{{ route('user.download.model', ['id' => $model->id]) }}" class="nav-link">
+                                    {{ $model->model_name }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.1/echarts.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#checkFtpButton').on('click', function() {
-            $.ajax({
-                url: '{{ route('user.check.ftp') }}',
-                method: 'GET',
-                success: function(data) {
-                    if (data.success) {
-                        $('#ftpStatus').html('<div class="alert alert-success">Подключение к FTP успешно! Файлы: ' + data.files.join(', ') + '</div>');
-                    } else {
-                        $('#ftpStatus').html('<div class="alert alert-danger">Ошибка: ' + data.error + '</div>');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    $('#ftpStatus').html('<div class="alert alert-danger">Произошла ошибка при проверке подключения к FTP.</div>');
+document.addEventListener('DOMContentLoaded', function () {
+    var chartDom = document.getElementById('chatStatsChart');
+    var myChart = echarts.init(chartDom);
+    var timeRangeSelect = document.getElementById('timeRange');
+
+    function fetchDataAndRenderChart() {
+        var timeRange = timeRangeSelect.value;
+        fetch('{{ route('user.chat.stats') }}?timeRange=' + timeRange)
+            .then(response => response.json())
+            .then(data => {
+                var chartData = data.map(item => {
+                    return { value: item.message_count, name: 'Chat ID ' + item.chat_id };
+                });
+
+                var option = {
+    title: {
+        text: 'Количество сообщений по чатам',
+        left: 'center',
+        textStyle: {
+            fontSize: window.innerWidth < 768 ? 14 : 18,
+            color: '#333'
+        }
+    },
+    tooltip: {
+        trigger: 'item',
+        formatter: '{b}: {c} сообщений ({d}%)'
+    },
+    legend: {
+        orient: 'vertical', // Ориентация легенды
+        left: 'left', // Расположение легенды слева
+        top: 'middle', // Вертикальное выравнивание
+        data: chartData.map(item => item.name)
+    },
+    series: [
+        {
+            name: 'Количество сообщений',
+            type: 'pie',
+            radius: window.innerWidth < 768 ? '50%' : '55%',
+            center: ['50%', '50%'],
+            data: chartData,
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
                 }
-            });
-        });
-    });
-</script>
-
-<script>
-    document.getElementById('uploadForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const formData = new FormData(this);
-
-        fetch('{{ route('user.file.upload') }}', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Файл успешно загружен!');
-            } else {
-                alert('Ошибка при загрузке файла: ' + data.error);
             }
-        })
-        .catch(error => {
-            log.error('Ошибка:', error);
-            alert('Произошла ошибка при загрузке файла.');
-        });
+        }
+    ]
+};
+
+myChart.setOption(option);
+            });
+    }
+
+    // Fetch data and render chart on page load
+    fetchDataAndRenderChart();
+
+    // Re-fetch data when time range changes
+    timeRangeSelect.addEventListener('change', function () {
+        fetchDataAndRenderChart();
     });
+});
 </script>
 @endsection

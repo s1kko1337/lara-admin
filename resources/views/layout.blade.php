@@ -2,69 +2,102 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ADMIN CLIENT</title>
     <meta name="csrf-token" content="{{csrf_token()}}">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-cart3' viewBox='0 0 16 16'%3E%3Cpath d='M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l.84 4.479 9.144-.459L13.89 4zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2'/%3E%3C/svg%3E" type="image/svg+xml">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Подключаем только Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Фавикон и дополнительные стили -->
+    <link rel="icon" href="...">
+    <style>
+        body {
+            padding-top: 56px;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .navbar-nav .nav-link {
+            margin-right: 15px;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
     <div class="row">
-    <div class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3">
-    <div class="card shadow-lg p-4 rounded">
-        <div class="dropdown mb-3">
-            <button class="btn btn-light btn-secondary dropdown-toggle w-100 text-truncate" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
-                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
-                </svg>
-                @auth
-                    {{ Auth::user()->username }} 
-                @endauth
-            </button>
-
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="/profile">Настройки профиля</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{{ route('user.logout') }}">Выйти</a></li>
-            </ul>
-        </div>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-            <a href="{{ route('user.chats.index') }}" class="nav-link {{ request()->routeIs('user.chats.index') ? 'active' : '' }}" aria-current="page">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
-                <path d="M5 8c0 .552.224 1 .5 1s.5-.448.5-1-.224-1-.5-1-.5.448-.5 1zm3 0c0 .552.224 1 .5 1s.5-.448.5-1-.224-1-.5-1-.5.448-.5 1zm3 0c0 .552.224 1 .5 1s.5-.448.5-1-.224-1-.5-1-.5.448-.5 1z"/>
-                <path d="M14 1H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h1.586l2.707 2.707a1 1 0 0 0 1.414 0L9.414 12H14a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm0 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9.586l-3 3L3 11H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12z"/>
-            </svg>
-            Чаты
-        </a>
-            </li>
-            <li>
-                <a href="{{ route('user.admintables') }}" class="nav-link {{ request()->routeIs('tables') ? 'active' : '' }}">
-                    <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
-                    Администрирование таблиц
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+            <div class="container-fluid">
+                <!-- Логотип или бренд -->
+                <a class="navbar-brand" href="{{ route('user.home') }}">
+                    ADMIN CLIENT
                 </a>
-            </li>
-        </ul>
-    </div> 
-</div>
+                <!-- Кнопка-тогглер для мобильных устройств -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                        aria-controls="navbarContent" aria-expanded="false" aria-label="Переключить навигацию">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-        <main class="col-md-9 col-lg-10 vh-100" style="overflow-y: auto;">
+                <!-- Содержимое навигации -->
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <!-- Левое меню -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a href="{{ route('user.home') }}" class="nav-link {{ request()->routeIs('user.home') ? 'active' : '' }}">
+                                Главная
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('user.chats.index') }}" class="nav-link {{ request()->routeIs('user.chats.index') ? 'active' : '' }}">
+                                Чаты
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('user.admintables') }}" class="nav-link {{ request()->routeIs('user.admintables') ? 'active' : '' }}">
+                                Администрирование таблиц
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- Правое меню (профиль пользователя) -->
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center"  id="userDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
+                                     class="bi bi-person" viewBox="0 0 16 16">
+                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                                </svg>
+                                @auth
+                                    <span class="ms-2">{{ Auth::user()->username }}</span>
+                                @endauth
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="/profile">Настройки профиля</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ route('user.logout') }}">Выйти</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Основной контент -->
+        <main class="col-12 vh-100" style="overflow-y: auto;">
             @yield('content')
         </main>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-@yield('scripts')
+<!-- Подключение скриптов Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+
+        @yield('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var dropdownToggle = document.querySelector('.dropdown-toggle');
+        var dropdownToggle = document.querySelector('.nav-link dropdown-toggle d-flex align-items-center');
         var emailText = document.querySelector('.email-text');
 
         dropdownToggle.addEventListener('click', function(event) {
@@ -93,6 +126,6 @@
         });
     });
 </script>
-
+@yield('scripts')
 </body>
 </html>

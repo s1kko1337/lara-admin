@@ -1,7 +1,11 @@
 @extends('layout')
 
 @section('content')
-    <h1 class="text-center">Список чатов</h1>
+    <h1 class="text-center">Список чатов
+    <a href="{{ route('user.chats.index') }}" class="float-button btn btn-primary">
+        <i class="fas fa-sync-alt"></i> Обновить список чатов
+    </a>
+    </h1>
     <div class="card shadow-lg p-4 rounded" style="border-radius: 15px; max-width:75%; margin-top: 10px; margin-bottom: 10px; margin-left: auto; margin-right: auto;">
         <div class="card-body">
             <div class="row">
@@ -45,6 +49,11 @@
                                             @csrf
                                             <button type="submit" class="dropdown-item">Сделать активным</button>
                                         </form>
+                                        <form method="POST" action="{{ route('user.chats.delete', $chat->chat_id) }}" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="dropdown-item">Удалить</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -55,8 +64,5 @@
         </div>
     </div>
 
-    <!-- Плавающая кнопка обновления -->
-    <a href="{{ route('user.chats.index') }}" class="float-button btn btn-primary"  style="position: absolute; top: 5%; left: 40%;">
-        <i class="fas fa-sync-alt"></i> Обновить список чатов
-    </a>
+
 @endsection

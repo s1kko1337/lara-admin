@@ -32,7 +32,7 @@ class FileUploadController extends Controller
         $request->validate([
             'model_name' => 'required|string|max:255', // Добавлено
             'description' => 'required|string|max:255',
-            'file' => 'required|file|max:2048',
+            'file' => 'required|file|max:4096',
         ]);
     
         $file = $request->file('file');
@@ -65,7 +65,37 @@ class FileUploadController extends Controller
         }
     }
 
-
+    public function downloadModel($id)
+    {
+        $model = Work::find($id);
+    
+        if (!$model || $model->modeler_id != Auth::id()) {
+            return redirect()->back()->with('error', 'Модель не найдена или доступ запрещен.');
+        }
+    
+        $ftpDisk = Storage::disk('ftp');
+        $remotePath = trim($model->path_to_model);
+    
+        try {
+            if ($ftpDisk->exists($remotePath)) {
+                $stream = $ftpDisk->readStream($remotePath);
+                $fileName = basename($remotePath);
+    
+                return response()->stream(function() use ($stream) {
+                    fpassthru($stream);
+                }, 200, [
+                    'Content-Type' => $ftpDisk->mimeType($remotePath),
+                    'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+                ]);
+            } else {
+                return redirect()->back()->with('error', 'Файл не найден на FTP сервере.');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Ошибка скачивания файла: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Ошибка скачивания файла: ' . $e->getMessage());
+        }
+    }
+    
 public function listModels()
 {
     $models = DB::table('works')->where('modeler_id', Auth::id())->get();
