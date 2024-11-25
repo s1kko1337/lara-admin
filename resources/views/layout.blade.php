@@ -21,13 +21,12 @@
 <body>
 <div class="container-fluid">
     <div class="row">
-        <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand" href="{{ route('user.home') }}">
                     ADMIN CLIENT
                 </a>
-                <!-- Кнопка-тогглер для мобильных устройств -->
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                         aria-controls="navbarContent" aria-expanded="false" aria-label="Переключить навигацию">
                     <span class="navbar-toggler-icon"></span>
@@ -47,7 +46,6 @@
                             </a>
                         </li>
                     </ul>
-                    <!-- Правое меню (профиль пользователя) -->
                     <ul class="navbar-nav">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center"  id="userDropdown" role="button"
@@ -71,7 +69,6 @@
             </div>
         </nav>
 
-        <!-- Основной контент -->
         <main class="col-12 " style="">
             @yield('content')
         </main>

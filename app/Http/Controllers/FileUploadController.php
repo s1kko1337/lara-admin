@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Work;
+use PDF;
 
 class FileUploadController extends Controller
 {
@@ -49,7 +50,7 @@ class FileUploadController extends Controller
             if ($ftpDisk->put($remotePath, fopen(storage_path('app/' . $localPath), 'r+'))) {
                 DB::table('works')->insert([
                     'modeler_id' => Auth::id(),
-                    'model_name' => $request->input('model_name'), // Добавлено
+                    'model_name' => $request->input('model_name'),
                     'path_to_model' => $remotePath,
                     'additional_info' => $request->input('description'),
                     'created_at' => now(),
@@ -96,105 +97,161 @@ class FileUploadController extends Controller
         }
     }
     
-public function listModels()
-{
-    $models = DB::table('works')->where('modeler_id', Auth::id())->get();
-    return view('upload-file', compact('models'));
-}
-
-public function deleteModel($id)
-{
-    $model = DB::table('works')->where('id', $id)->first();
-
-    if (!$model) {
-        return redirect()->back()->with('error', 'Модель не найдена.');
+    public function listModels()
+    {
+        $models = DB::table('works')->where('modeler_id', Auth::id())->get();
+        return view('upload-file', compact('models'));
     }
 
-    $ftpDisk = Storage::disk('ftp');
-    $remotePath = trim($model->path_to_model);
+    public function deleteModel($id)
+    {
+        $model = DB::table('works')->where('id', $id)->first();
 
-    try {
-        // Выводим путь в лог для отладки
-        \Log::info('Путь к файлу для удаления: ' . $remotePath);
-
-        // Удаление файла на FTP сервере
-        if ($ftpDisk->exists($remotePath)) {
-            if ($ftpDisk->delete($remotePath)) {
-                // Удаление записи из базы данных
-                DB::table('works')->where('id', $id)->delete();
-                return redirect()->back()->with('success', 'Модель успешно удалена.');
-            } else {
-                return redirect()->back()->with('error', 'Не удалось удалить файл с FTP сервера.');
-            }
-        } else {
-            return redirect()->back()->with('error', 'Файл не найден на FTP сервере.');
-        }
-    } catch (\Exception $e) {
-        \Log::error('Ошибка удаления файла: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Ошибка удаления модели: ' . $e->getMessage());
-    }
-}
-
-public function updateModel(Request $request, $id)
-{
-    $model = Work::find($id);
-
-    if (!$model) {
-        return redirect()->back()->with('error', 'Модель не найдена.');
-    }
-
-    $request->validate([
-        'model_name' => 'required|string|max:255', // Добавлено
-        'description' => 'required|string|max:255',
-        'file' => 'nullable|file|max:2048',
-    ]);
-
-    $model->model_name = $request->input('model_name'); // Добавлено
-    $model->additional_info = $request->input('description');
-
-    if ($request->hasFile('file')) {
-        $file = $request->file('file');
-        $localPath = $file->store('uploads');
-
-        if (!Storage::exists($localPath)) {
-            return redirect()->back()->with('error', 'Ошибка сохранения файла на сервере.');
+        if (!$model) {
+            return redirect()->back()->with('error', 'Модель не найдена.');
         }
 
         $ftpDisk = Storage::disk('ftp');
-        $remotePath = 'upload/' . $file->getClientOriginalName();
+        $remotePath = trim($model->path_to_model);
 
         try {
-            if ($ftpDisk->put($remotePath, fopen(storage_path('app/' . $localPath), 'r+'))) {
-                $oldRemotePath = trim($model->path_to_model);
-                if ($ftpDisk->exists($oldRemotePath)) {
-                    $ftpDisk->delete($oldRemotePath);
-                }
+            \Log::info('Путь к файлу для удаления: ' . $remotePath);
 
-                $model->path_to_model = $remotePath;
+            if ($ftpDisk->exists($remotePath)) {
+                if ($ftpDisk->delete($remotePath)) {
+                    DB::table('works')->where('id', $id)->delete();
+                    return redirect()->back()->with('success', 'Модель успешно удалена.');
+                } else {
+                    return redirect()->back()->with('error', 'Не удалось удалить файл с FTP сервера.');
+                }
             } else {
-                return redirect()->back()->with('error', 'Не удалось загрузить файл на FTP.');
+                return redirect()->back()->with('error', 'Файл не найден на FTP сервере.');
             }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Ошибка загрузки файла: ' . $e->getMessage());
+            \Log::error('Ошибка удаления файла: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Ошибка удаления модели: ' . $e->getMessage());
         }
     }
 
-    $model->save();
+    public function updateModel(Request $request, $id)
+    {
+        $model = Work::find($id);
 
-    return redirect()->route('user.file.get')->with('success', 'Модель успешно обновлена.');
-}
+        if (!$model) {
+            return redirect()->back()->with('error', 'Модель не найдена.');
+        }
 
-public function editModel($id)
-{
-    $model = DB::table('works')->where('id', $id)->first();
+        $request->validate([
+            'model_name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'file' => 'nullable|file|max:2048',
+        ]);
 
-    if (!$model) {
-        return redirect()->back()->with('error', 'Модель не найдена.');
+        $model->model_name = $request->input('model_name');
+        $model->additional_info = $request->input('description');
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $localPath = $file->store('uploads');
+
+            if (!Storage::exists($localPath)) {
+                return redirect()->back()->with('error', 'Ошибка сохранения файла на сервере.');
+            }
+
+            $ftpDisk = Storage::disk('ftp');
+            $remotePath = 'upload/' . $file->getClientOriginalName();
+
+            try {
+                if ($ftpDisk->put($remotePath, fopen(storage_path('app/' . $localPath), 'r+'))) {
+                    $oldRemotePath = trim($model->path_to_model);
+                    if ($ftpDisk->exists($oldRemotePath)) {
+                        $ftpDisk->delete($oldRemotePath);
+                    }
+
+                    $model->path_to_model = $remotePath;
+                } else {
+                    return redirect()->back()->with('error', 'Не удалось загрузить файл на FTP.');
+                }
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Ошибка загрузки файла: ' . $e->getMessage());
+            }
+        }
+
+        $model->save();
+
+        return redirect()->route('user.file.get')->with('success', 'Модель успешно обновлена.');
     }
 
-    // Получаем все доступные теги
+    public function editModel($id)
+    {
+        $model = DB::table('works')->where('id', $id)->first();
 
-    return view('editModel', compact('model'));
-}
+        if (!$model) {
+            return redirect()->back()->with('error', 'Модель не найдена.');
+        }
 
+        return view('editModel', compact('model'));
+    }
+
+        public function downloadCsv()
+    {
+        try {
+            $models = DB::table('works')->where('modeler_id', Auth::id())->get();
+
+            $headers = [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Content-Disposition' => 'attachment; filename="models.csv"',
+            ];
+
+            $callback = function() use ($models) {
+                $file = fopen('php://output', 'w');
+
+                fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+                fputcsv($file, ['ID', 'Название модели', 'Описание', 'Путь к модели'], ';');
+
+                foreach ($models as $model) {
+                    fputcsv($file, [
+                        $model->id,
+                        $model->model_name,
+                        $model->additional_info,
+                        $model->path_to_model
+                    ], ';');
+                }
+                fclose($file);
+            };
+
+            return response()->stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            \Log::error('Ошибка генерации CSV: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Ошибка при генерации CSV файла.');
+        }
+    }
+
+    public function exportPdf()
+    {
+        try {
+            $userId = Auth::id();
+
+            $models = Work::where('modeler_id', $userId)->get();
+
+            $data = [
+                'filesCount' => $models->count(),
+                'files' => $models->map(function($model) {
+                    return [
+                        'name' => $model->model_name,
+                        'uploaded_at' => $model->created_at->format('d.m.Y H:i'),
+                    ];
+                }),
+                'models' => $models,
+            ];
+
+            $pdf = Pdf::loadView('pdf.models', $data);
+
+            return $pdf->download('models.pdf');
+        } catch (\Exception $e) {
+            \Log::error('Ошибка генерации PDF: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Ошибка при генерации PDF-файла.');
+        }
+    }
 }

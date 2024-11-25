@@ -60,6 +60,9 @@ Route::name('user.')->group(function() {
         Route::delete('profile/models/delete/{id}', [FileUploadController::class, 'deleteModel'])->name('file.deleteModel');
         Route::get('profile/models/{id}/edit', [FileUploadController::class, 'editModel'])->name('file.editModel');
         Route::put('profile/models/{id}', [FileUploadController::class, 'updateModel'])->name('file.updateModel');
+        Route::get('profile/download-csv', [FileUploadController::class, 'downloadCsv'])->name('file.downloadCsv');
+        Route::get('profile/export-pdf', [FileUploadController::class, 'exportPdf'])->name('file.exportPdf');
+
         Route::get('/admin/chats', [ChatController::class, 'index'])->name('chats.index');
         Route::get('/admin/chats/{chat_id}', [ChatController::class, 'show'])->name('chats.show');
         Route::post('/admin/chats/{chat_id}/send', [ChatController::class, 'sendMessage'])->name('chats.send');

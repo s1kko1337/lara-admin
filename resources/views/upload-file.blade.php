@@ -38,7 +38,9 @@
 
     @if ($models->count())
     <div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px; width: 85%; max-width: 600px; margin-left: auto; margin-right: auto;">
-        <h3>Список загруженных моделей</h3>
+    <a href="{{ route('user.file.downloadCsv') }}" class="btn btn-success mb-3">Скачать CSV</a>    
+    <a href="{{ route('user.file.exportPdf') }}" class="btn btn-primary mb-3">Экспорт в PDF</a>
+    <h3>Список загруженных моделей</h3>
         <table class="table table-bordered mt-3">
             <thead>
                 <tr>
