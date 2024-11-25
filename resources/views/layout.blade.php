@@ -5,10 +5,6 @@
     <title>ADMIN CLIENT</title>
     <meta name="csrf-token" content="{{csrf_token()}}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Подключаем только Bootstrap 5 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <!-- Фавикон и дополнительные стили -->
     <link rel="icon" href="...">
     <style>
         body {
@@ -28,7 +24,6 @@
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
             <div class="container-fluid">
-                <!-- Логотип или бренд -->
                 <a class="navbar-brand" href="{{ route('user.home') }}">
                     ADMIN CLIENT
                 </a>
@@ -38,7 +33,6 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Содержимое навигации -->
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <!-- Левое меню -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -50,11 +44,6 @@
                         <li class="nav-item">
                             <a href="{{ route('user.chats.index') }}" class="nav-link {{ request()->routeIs('user.chats.index') ? 'active' : '' }}">
                                 Чаты
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('user.admintables') }}" class="nav-link {{ request()->routeIs('user.admintables') ? 'active' : '' }}">
-                                Администрирование таблиц
                             </a>
                         </li>
                     </ul>
@@ -83,7 +72,7 @@
         </nav>
 
         <!-- Основной контент -->
-        <main class="col-12 vh-100" style="overflow-y: auto;">
+        <main class="col-12 " style="">
             @yield('content')
         </main>
     </div>
@@ -93,7 +82,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         @yield('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -126,6 +115,5 @@
         });
     });
 </script>
-@yield('scripts')
 </body>
 </html>

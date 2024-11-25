@@ -14,7 +14,7 @@ class RegisterController extends Controller
     }
 
     $validateFields = $request->validate([
-        'username' => 'required|min:8',
+        'username' => 'required|min:6',
         'email' => 'required|email',
         'password' => 'required|min:8',
     ]);

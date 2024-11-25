@@ -95,7 +95,6 @@ public function saveUser(Request $request){
 
 public function updatePassword(Request $request)
 {
-    // Валидация данных
     $request->validate([
         'current_password' => 'required',
         'new_password' => 'required|min:8|confirmed',
@@ -103,7 +102,6 @@ public function updatePassword(Request $request)
 
     $user = Auth::user();
 
-    // Проверка текущего пароля
     if (!Hash::check($request->current_password, $user->password)) {
         return back()->with('error', 'Текущий пароль введен неверно.');
     }
@@ -120,15 +118,16 @@ public function editPortfolio()
 {
     $userId = Auth::user()->id;
     
-    // Получаем портфолио текущего пользователя
     $portfolio = Portfolio::where('id', $userId)->first();
     
     if (!$portfolio) {
         $portfolio = Portfolio::create([
-            'id' => $userId, // Используем id пользователя в качестве id портфолио
-            'main_info' => json_encode(['info' => '']), // Пустой JSON
-            'additional_info' => json_encode(['info' => '']), // Пустой JSON
-            'media_links' => json_encode(['artstation' => '', 'tg' => '', 'vk' => '', 'inst' => '']), // Пустой JSON
+            'id' => $userId, 
+            'main_info' => json_encode(['info' => '']),
+            'additional_info' => json_encode(['info' => '']),
+            'media_links' => json_encode(['artstation' => '', 'tg' => '', 'vk' => '', 'inst' => '']),
+            'created_at' => now(),
+            'updated_at' => now()
         ]);
     } else {
         $portfolio = Portfolio::where('id', $userId)->first();
@@ -146,11 +145,18 @@ public function updatePortfolio(Request $request)
         'media_links' => 'required|array',
     ]);
 
-    // Находим портфолио пользователя и обновляем его
     $portfolio = Portfolio::where('id', Auth::user()->id)->firstOrFail();
     $portfolio->update($request->all());
 
     return redirect()->route('user.profile')->with('success', 'Портфолио обновлено успешно');
+}
+
+public function deletePortfolio()
+{
+    $portfolio = Portfolio::where('id', Auth::user()->id)->firstOrFail();
+    $portfolio->delete();
+
+    return redirect()->route('user.profile')->with('success', 'Портфолио обновлено удалено');
 }
 
 }

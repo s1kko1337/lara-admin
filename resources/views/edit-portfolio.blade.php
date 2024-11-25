@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-    <div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px;">
+<div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px; width: 85%; max-width: 600px; margin-left: auto; margin-right: auto;">
         <h2 class="mb-4">Редактировать Портфолио</h2>
 
         <!-- Форма редактирования -->
@@ -53,6 +53,11 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Обновить Портфолио</button>
+        </form>
+        <form method="POST" action="{{ route('user.profile.deletePortfolio') }}">
+             @csrf
+             @method('DELETE')
+             <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить портфолио?')">Удалить</button>
         </form>
     </div>
 @endsection

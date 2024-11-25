@@ -6,6 +6,7 @@ use App\Events\ChatUpdated;
 use App\Models\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
@@ -14,7 +15,7 @@ class ChatController extends Controller
     {
         $chats = DB::table('messages_stat')
             ->select('chat_id', 'chat_article', 'chat_status')
-            ->whereNotNull('chat_article')
+            ->whereNotNull('chat_article')->where('id_user',  auth()->id())
             ->groupBy('chat_id', 'chat_article', 'chat_status')
             ->get();
     
@@ -23,7 +24,7 @@ class ChatController extends Controller
 
     public function show($chat_id)
     {
-        $messages = Message::where('chat_id', $chat_id)->orderBy('created_at')->get();
+        $messages = Message::where('chat_id', $chat_id)->where('id_user',  auth()->id())->orderBy('created_at')->get();
         foreach ($messages as $message) {
             $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
         }
@@ -53,7 +54,7 @@ class ChatController extends Controller
     {
         $chats = DB::table('messages_stat')
             ->select('chat_id', 'chat_article', 'chat_status')
-            ->whereNotNull('chat_article')
+            ->whereNotNull('chat_article')->where('id_user',  auth()->id())
             ->groupBy('chat_id', 'chat_article', 'chat_status')
             ->get();
         
@@ -84,7 +85,7 @@ class ChatController extends Controller
 
 public function getMessages($chatId)
 {
-    $messages = Message::where('chat_id', $chatId)->latest()->get();
+    $messages = Message::where('chat_id', $chatId)->where('id_user',  auth()->id())->latest()->get();
 
     foreach ($messages as $message) {
         $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
@@ -93,28 +94,6 @@ public function getMessages($chatId)
     return response()->json($messages);
 }
 
-// Метод для обновления сообщения
-public function updateMessage(Request $request, $id)
-{
-    $validated = $request->validate([
-        'message_text' => 'required|string',
-    ]);
-
-    $message = Message::findOrFail($id);
-    $message->message_text = $validated['message_text'];
-    $message->save();
-
-    return redirect()->back()->with('success', 'Сообщение обновлено!');
-}
-
-// Метод для удаления сообщения
-public function deleteMessage($id)
-{
-    $message = Message::findOrFail($id);
-    $message->delete();
-
-    return redirect()->back()->with('success', 'Сообщение удалено!');
-}
 
 public function deleteChat($inputChatId)
 {
@@ -124,7 +103,7 @@ public function deleteChat($inputChatId)
     $chatId = filter_var($inputChatId, FILTER_SANITIZE_NUMBER_INT);
     try {
         // Удаляем все записи с указанным chat_id из таблицы messages_stat
-        DB::table('messages_stat')->where('chat_id', $chatId)->delete();
+        DB::table('messages_stat')->where('chat_id', $chatId)->where('id_user',  auth()->id())->delete();
 
         return redirect()->route('user.chats.index')->with('success', 'Чат успешно удален.');
     } catch (\Exception $e) {

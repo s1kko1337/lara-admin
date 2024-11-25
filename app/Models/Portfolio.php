@@ -9,15 +9,16 @@ class Portfolio extends Model
 {
     use HasFactory;
 
-    protected $table = 'portfolios'; // Явное указание таблицы
+    protected $table = 'portfolios';
 
     protected $fillable = [
+        'id',
         'main_info', 
         'additional_info', 
         'media_links'
     ];
 
-    // Обработка JSON полей
+
     protected $casts = [
         'main_info' => 'array',
         'additional_info' => 'array',

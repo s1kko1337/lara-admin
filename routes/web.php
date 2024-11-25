@@ -33,13 +33,14 @@ Route::name('user.')->group(function() {
         Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
         Route::get('/profile/edit-portfolio', [ProfileController::class, 'editPortfolio'])->name('profile.editPortfolio');
         Route::post('/profile/update-portfolio', [ProfileController::class, 'updatePortfolio'])->name('profile.updatePortfolio');
+        Route::delete('/profile/delete-portfolio', [ProfileController::class, 'deletePortfolio'])->name('profile.deletePortfolio');    
 
-        Route::get('/admintables', [AdminTablesController::class, 'showTables'])->name('admintables');
-        Route::get('/admintables/{tableName}/edit', [AdminTablesController::class, 'editTable'])->name('admintables.edit');
-        Route::put('/admintables/{tableName}/update/{id}', [AdminTablesController::class, 'updateTable'])->name('admintables.update');
-        Route::get('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->name('admintables.add');
-        Route::post('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->name('admintables.add');
-        Route::delete('/admintables/{tableName}/delete/{id}', [AdminTablesController::class, 'destroy'])->name('admintables.delete');
+        // Route::get('/admintables', [AdminTablesController::class, 'showTables'])->name('admintables');
+        // Route::get('/admintables/{tableName}/edit', [AdminTablesController::class, 'editTable'])->name('admintables.edit');
+        // Route::put('/admintables/{tableName}/update/{id}', [AdminTablesController::class, 'updateTable'])->name('admintables.update');
+        // Route::get('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->name('admintables.add');
+        // Route::post('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->name('admintables.add');
+        // Route::delete('/admintables/{tableName}/delete/{id}', [AdminTablesController::class, 'destroy'])->name('admintables.delete');
 
         Route::post('/profile/edit-name', [ProfileController::class, 'editName'])->name('profile.editName');
         Route::post('/profile/edit-email', [ProfileController::class, 'editEmail'])->name('profile.editEmail');

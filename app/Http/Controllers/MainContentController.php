@@ -38,16 +38,16 @@ class MainContentController extends Controller
 
     private function countChats()
     {
-        $uniqueIdCount = DB::table('messages_stat')
+        $uniqueIdCount = DB::table('messages_stat')->where('id_user',  auth()->id())
         ->distinct()
         ->count('chat_id');
         $uniqueIdCountActive = DB::table('messages_stat')
-        ->distinct()
+        ->distinct()->where('id_user',  auth()->id())
         ->where('chat_status', 'active') // Исправлено на 'chat_status'
         ->count('chat_id');
     
     $uniqueIdCountInactive = DB::table('messages_stat')
-        ->distinct()
+        ->distinct()->where('id_user',  auth()->id())
         ->where('chat_status', 'inactive') // Исправлено на 'chat_status'
         ->count('chat_id');
     
@@ -76,7 +76,7 @@ public function getChatStats(Request $request)
             break;
     }
 
-    $query = DB::table('messages_stat');
+    $query = DB::table('messages_stat')->where('id_user',  auth()->id());
 
     if ($startDate) {
         $query->where('created_at', '>=', $startDate);

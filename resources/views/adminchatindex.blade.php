@@ -63,6 +63,56 @@
             </div>
         </div>
     </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    var dropdownToggle = document.querySelector('.nav-link.dropdown-toggle.d-flex.align-items-center');
+    var emailText = document.querySelector('.email-text');
+    
+    dropdownToggles.forEach(function(toggle) {
+        toggle.addEventListener('click', function(event) {
+            event.preventDefault();
+            var dropdownMenu = this.nextElementSibling;
+            if (dropdownMenu) {
+                dropdownMenu.classList.toggle('show');
+            }
+        });
+    });
 
+    if (dropdownToggle) {
+        dropdownToggle.addEventListener('click', function(event) {
+            event.preventDefault();
+            var dropdownMenu = this.nextElementSibling;
+            if (dropdownMenu) {
+                if (dropdownMenu.classList.contains('show')) {
+                    dropdownMenu.classList.remove('show');
+                    dropdownMenu.removeAttribute('style');
+                    if (emailText) {
+                        emailText.classList.add('text-truncate');
+                    }
+                } else {
+                    dropdownMenu.classList.add('show');
+                    dropdownMenu.style.display = 'block';
+                    if (emailText) {
+                        emailText.classList.remove('text-truncate');
+                    }
+                }
+            }
+        });
+    }
 
+    document.addEventListener('click', function(event) {
+        var dropdownMenus = document.querySelectorAll('.dropdown-menu');
+        dropdownMenus.forEach(function(menu) {
+            if (!menu.contains(event.target) && !event.target.classList.contains('dropdown-toggle')) {
+                menu.classList.remove('show');
+                menu.removeAttribute('style');
+                if (emailText) {
+                    emailText.classList.add('text-truncate');
+                }
+            }
+        });
+    });
+});
+</script>
 @endsection

@@ -132,10 +132,8 @@ myChart.setOption(option);
             });
     }
 
-    // Fetch data and render chart on page load
     fetchDataAndRenderChart();
 
-    // Re-fetch data when time range changes
     timeRangeSelect.addEventListener('change', function () {
         fetchDataAndRenderChart();
     });

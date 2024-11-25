@@ -30,7 +30,7 @@ class FileUploadController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'model_name' => 'required|string|max:255', // Добавлено
+            'model_name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'file' => 'required|file|max:4096',
         ]);

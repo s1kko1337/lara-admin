@@ -25,12 +25,6 @@
     <label for="password">Пароль</label>
   </div>
 
-  <div class="form-check text-start my-3">
-    <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault" name="remember_me">
-    <label class="form-check-label" for="flexCheckDefault">
-      Запомнить меня
-    </label>
-  </div>
   <button class="btn btn-primary w-100 py-2" type="submit">Войти</button>
 
   @if($errors->any())
