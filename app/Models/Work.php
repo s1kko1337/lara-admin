@@ -15,6 +15,13 @@ class Work extends Model
         'tags',
         'created_at',
         'updated_at',
-        'model_name'
+        'model_name',
+        'binary_file',
+        'binary_preview',
+    ];
+
+    protected $casts = [
+        'binary_file' => 'string',
+        'binary_preview' => 'string',
     ];
 }

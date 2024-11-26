@@ -34,9 +34,18 @@ class FileUploadController extends Controller
             'model_name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'file' => 'required|file|max:4096',
+            'preview' => 'required|image|max:2048',
         ]);
     
         $file = $request->file('file');
+        $fileContent = file_get_contents($file->getRealPath());
+        $fileContentBase64 = base64_encode($fileContent);
+    
+    
+        $preview = $request->file('preview');
+        $previewContent = file_get_contents($preview->getRealPath());
+        $previewContentBase64 = base64_encode($previewContent);
+    
         $localPath = $file->store('uploads'); 
     
         if (!Storage::exists($localPath)) {
@@ -44,19 +53,21 @@ class FileUploadController extends Controller
         }
     
         $ftpDisk = Storage::disk('ftp'); 
-        $remotePath = 'upload/' . $file->getClientOriginalName(); 
+        $remotePath = 'upload/' . $file->getClientOriginalName();
     
         try {
             if ($ftpDisk->put($remotePath, fopen(storage_path('app/' . $localPath), 'r+'))) {
-                DB::table('works')->insert([
+            
+            
+                Work::create([
                     'modeler_id' => Auth::id(),
                     'model_name' => $request->input('model_name'),
                     'path_to_model' => $remotePath,
                     'additional_info' => $request->input('description'),
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'binary_file' => $fileContentBase64,
+                    'binary_preview' => $previewContentBase64,
                 ]);
-    
+            
                 return redirect()->back()->with('success', 'Файл успешно загружен.');
             } else {
                 return redirect()->back()->with('error', 'Не удалось загрузить файл на FTP.');
@@ -136,39 +147,44 @@ class FileUploadController extends Controller
     public function updateModel(Request $request, $id)
     {
         $model = Work::find($id);
-
+    
         if (!$model) {
             return redirect()->back()->with('error', 'Модель не найдена.');
         }
-
+    
         $request->validate([
             'model_name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
-            'file' => 'nullable|file|max:2048',
+            'file' => 'nullable|file|max:4096',
+            'preview' => 'nullable|image|max:2048',
         ]);
-
+    
         $model->model_name = $request->input('model_name');
         $model->additional_info = $request->input('description');
-
+    
         if ($request->hasFile('file')) {
             $file = $request->file('file');
+            $fileContent = file_get_contents($file->getRealPath());
+            $fileContentBase64 = base64_encode($fileContent);
             $localPath = $file->store('uploads');
-
+    
             if (!Storage::exists($localPath)) {
                 return redirect()->back()->with('error', 'Ошибка сохранения файла на сервере.');
             }
-
+    
             $ftpDisk = Storage::disk('ftp');
             $remotePath = 'upload/' . $file->getClientOriginalName();
-
+    
             try {
                 if ($ftpDisk->put($remotePath, fopen(storage_path('app/' . $localPath), 'r+'))) {
+
                     $oldRemotePath = trim($model->path_to_model);
                     if ($ftpDisk->exists($oldRemotePath)) {
                         $ftpDisk->delete($oldRemotePath);
                     }
-
+    
                     $model->path_to_model = $remotePath;
+                    $model->binary_file = $fileContentBase64;
                 } else {
                     return redirect()->back()->with('error', 'Не удалось загрузить файл на FTP.');
                 }
@@ -176,9 +192,16 @@ class FileUploadController extends Controller
                 return redirect()->back()->with('error', 'Ошибка загрузки файла: ' . $e->getMessage());
             }
         }
-
+    
+        if ($request->hasFile('preview')) {
+            $preview = $request->file('preview');
+            $previewContent = file_get_contents($preview->getRealPath());
+            $previewContentBase64 = base64_encode($previewContent);
+            $model->binary_preview = $previewContentBase64;
+        }
+    
         $model->save();
-
+    
         return redirect()->route('user.file.get')->with('success', 'Модель успешно обновлена.');
     }
 

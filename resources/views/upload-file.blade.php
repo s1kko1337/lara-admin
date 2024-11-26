@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-<div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px; width: 85%; max-width: 600px; margin-left: auto; margin-right: auto;">
+<div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px; width: 85%; max-width: 700px; margin-left: auto; margin-right: auto;">
         <h2 class="mb-4">Загрузить файл модели</h2>
 
         <form method="POST" enctype="multipart/form-data" action="{{ route('user.file.upload') }}">
@@ -10,6 +10,11 @@
             <div class="form-group mb-3">
                 <label for="description">Название модели:</label>
                 <textarea class="form-control" id="model_name" name="model_name" rows="1" required></textarea>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="preview">Превью изображения</label>
+                <input type="file" name="preview" id="preview" accept="image/*" required>
             </div>
 
             <div class="form-group mb-3">
@@ -37,7 +42,7 @@
     </div>
 
     @if ($models->count())
-    <div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px; width: 85%; max-width: 600px; margin-left: auto; margin-right: auto;">
+    <div class="card shadow-lg p-4 rounded" style="border-radius: 15px; margin-top: 10px; margin-bottom: 10px; width: 85%; max-width: 700px; margin-left: auto; margin-right: auto;">
     <a href="{{ route('user.file.downloadCsv') }}" class="btn btn-success mb-3">Скачать CSV</a>    
     <a href="{{ route('user.file.exportPdf') }}" class="btn btn-primary mb-3">Экспорт в PDF</a>
     <h3>Список загруженных моделей</h3>
@@ -46,6 +51,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Название модели</th>
+                    <th>Превью</th>
                     <th>Описание</th>
                     <th>Путь к модели</th>
                     <th>Действия</th>
@@ -56,6 +62,13 @@
                 <tr>
                     <td>{{ $model->id }}</td>
                     <td>{{ $model->model_name }}</td>
+                    <td>
+                        @if($model->binary_preview)
+                        <img src="data:image/jpeg;base64,{{ $model->binary_preview }}" alt="Preview" width="100">
+                        @else
+                            Нет превью
+                        @endif
+                    </td>
                     <td>{{ $model->additional_info }}</td>
                     <td>{{ $model->path_to_model }}</td>
                     <td>

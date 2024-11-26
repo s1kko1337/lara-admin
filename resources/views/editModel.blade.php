@@ -22,6 +22,11 @@
       </div>
 
       <div class="form-group">
+        <label for="preview">Обновить превью изображения</label>
+        <input type="file" name="preview" id="preview" accept="image/*">
+      </div>
+
+      <div class="form-group">
         <label for="file">Загрузить новую модель (если необходимо):</label>
         <input type="file" name="file" class="form-control">
       </div>

@@ -33,6 +33,7 @@
             <tr>
                 <th>ID</th>
                 <th>Название модели</th>
+                <th>Превью модели</th>
                 <th>Описание</th>
                 <th>Путь к модели</th>
             </tr>
@@ -42,6 +43,13 @@
             <tr>
                 <td>{{ $model->id }}</td>
                 <td>{{ $model->model_name }}</td>
+                <td>
+                        @if($model->binary_preview)
+                        <img src="data:image/jpeg;base64,{{ $model->binary_preview }}" alt="Preview" width="100">
+                        @else
+                            Нет превью
+                        @endif
+                    </td>
                 <td>{{ $model->additional_info }}</td>
                 <td>{{ $model->path_to_model }}</td>
             </tr>
