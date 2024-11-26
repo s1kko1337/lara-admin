@@ -55,11 +55,10 @@ class MainContentController extends Controller
         return $res;
     }
 
-    // app/Http/Controllers/MainContentController.php
 
 public function getChatStats(Request $request)
 {
-    $timeRange = $request->input('timeRange', 'all'); // Default to 'all' if not provided
+    $timeRange = $request->input('timeRange', 'all'); 
 
     switch ($timeRange) {
         case 'day':

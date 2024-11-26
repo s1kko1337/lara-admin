@@ -24,10 +24,10 @@ class ChatController extends Controller
 
     public function show($chat_id)
     {
-        $messages = Message::where('chat_id', $chat_id)->where('id_user',  auth()->id())->orderBy('created_at')->get();
-        foreach ($messages as $message) {
-            $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
-        }
+        $messages = Message::where('chat_id', $chat_id)->where('id_user',  auth()->id())->orderBy('id')->get();
+        // foreach ($messages as $message) {
+        //     $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
+        // }
 
         return view('adminchatsshow', compact('messages'));
     }
@@ -87,9 +87,9 @@ public function getMessages($chatId)
 {
     $messages = Message::where('chat_id', $chatId)->where('id_user',  auth()->id())->latest()->get();
 
-    foreach ($messages as $message) {
-        $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
-    }
+    // foreach ($messages as $message) {
+    //     $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
+    // }
 
     return response()->json($messages);
 }
@@ -121,9 +121,9 @@ public function getNewMessages(Request $request, $chat_id)
         ->orderBy('created_at', 'asc')
         ->get();
 
-    foreach ($newMessages as $message) {
-        $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
-    }
+    // foreach ($newMessages as $message) {
+    //     $message->created_at = $message->created_at->setTimezone('Europe/Moscow')->format('d.m.Y, H:i:s');
+    // }
 
     return response()->json($newMessages);
 }

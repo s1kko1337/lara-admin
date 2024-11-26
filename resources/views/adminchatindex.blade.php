@@ -12,7 +12,7 @@
                 <div class="col-md-6 border-right">
                     <h3>Активные чаты</h3>
                     @foreach ($chats as $chat)
-                        @if ($chat->chat_status == 'active')
+                        @if ($chat->chat_status == 'active' && $chat->chat_article!='null')
                             <div class="mb-3">
                                 <h5>{{ $chat->chat_article }}</h5>
                                 <p>Chat ID: {{ $chat->chat_id }}</p>
@@ -35,7 +35,7 @@
                 <div class="col-md-6">
                     <h3>Неактивные чаты</h3>
                     @foreach ($chats as $chat)
-                        @if ($chat->chat_status == 'inactive')
+                        @if ($chat->chat_status == 'inactive' && $chat->chat_article!='null')
                             <div class="mb-3">
                                 <h5>{{ $chat->chat_article }}</h5>
                                 <p>Chat ID: {{ $chat->chat_id }}</p>
