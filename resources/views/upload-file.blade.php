@@ -14,7 +14,7 @@
 
             <div class="form-group mb-3">
                 <label for="preview">Превью изображения</label>
-                <input type="file" name="preview" id="preview" accept="image/*" required>
+                <input type="file" name="preview" id="preview" accept=".jpg" required>
             </div>
 
             <div class="form-group mb-3">

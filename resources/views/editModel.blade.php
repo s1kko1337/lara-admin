@@ -23,7 +23,7 @@
 
       <div class="form-group">
         <label for="preview">Обновить превью изображения</label>
-        <input type="file" name="preview" id="preview" accept="image/*">
+        <input type="file" name="preview" id="preview" accept=".jpg">
       </div>
 
       <div class="form-group">
