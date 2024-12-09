@@ -24,4 +24,5 @@ class Work extends Model
         'binary_file' => 'string',
         'binary_preview' => 'string',
     ];
+
 }

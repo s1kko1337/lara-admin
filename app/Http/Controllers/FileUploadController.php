@@ -108,9 +108,20 @@ class FileUploadController extends Controller
         }
     }
     
-    public function listModels()
+        public function listModels(Request $request)
     {
-        $models = DB::table('works')->where('modeler_id', Auth::id())->get();
+        $query = Work::where('modeler_id', Auth::id());
+    
+        if ($request->filled('search_id')) {
+            $query->where('id', $request->input('search_id'));
+        }
+    
+        if ($request->filled('search_name')) {
+            $query->where('model_name', 'like', '%' . $request->input('search_name') . '%');
+        }
+    
+        $models = $query->get();
+    
         return view('upload-file', compact('models'));
     }
 
@@ -277,4 +288,81 @@ class FileUploadController extends Controller
             return redirect()->back()->with('error', 'Ошибка при генерации PDF-файла.');
         }
     }
+    public function checkModels(Request $request)
+    {
+        try {
+            $request->validate([
+                'csv_file' => 'required|file|mimes:csv,txt',
+            ]);
+    
+            $csvFile = $request->file('csv_file');
+    
+            if (!$csvFile->isValid()) {
+                return redirect()->back()->with('error', 'Ошибка загрузки CSV файла.');
+            }
+    
+            $path = $csvFile->getRealPath();
+    
+            $modelsFromCsv = [];
+    
+            if (($handle = fopen($path, 'r')) !== false) {
+                $header = fgetcsv($handle, 1000, ';');
+    
+                // Remove BOM from the first header field, if present
+                if ($header && count($header) > 0) {
+                    $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', $header[0]);
+                }
+    
+                $headerMapping = array_flip($header);
+    
+                while (($data = fgetcsv($handle, 1000, ';')) !== false) {
+                    $modelsFromCsv[] = [
+                        'id' => $data[$headerMapping['ID']],
+                        'model_name' => $data[$headerMapping['Название модели']],
+                        'additional_info' => $data[$headerMapping['Описание']],
+                        'path_to_model' => $data[$headerMapping['Путь к модели']],
+                    ];
+                }
+                fclose($handle);
+            }
+    
+    
+            $results = [];
+    
+            foreach ($modelsFromCsv as $modelData) {
+                $modelExistsInDb = Work::where('path_to_model', $modelData['path_to_model'])
+                    ->where('modeler_id', Auth::id())
+                    ->exists();
+    
+                $modelFileExistsOnFtp = false;
+    
+                $remotePath = trim($modelData['path_to_model']);
+    
+                $ftpDisk = Storage::disk('ftp');
+    
+                try {
+                    if ($ftpDisk->exists($remotePath)) {
+                        $modelFileExistsOnFtp = true;
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Ошибка доступа к FTP для файла ' . $remotePath . ': ' . $e->getMessage());
+                }
+    
+                $results[] = [
+                    'id' => $modelData['id'],
+                    'model_name' => $modelData['model_name'],
+                    'exists_in_db' => $modelExistsInDb,
+                    'exists_on_ftp' => $modelFileExistsOnFtp,
+                ];
+            }
+    
+            return view('checkmodelsresult', compact('results'));
+    
+        } catch (\Exception $e) {
+            \Log::error('Ошибка проверки наличия моделей на сервере: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Ошибка при проверке наличия моделей.');
+        }
+    }
+
+    
 }

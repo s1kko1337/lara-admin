@@ -62,6 +62,7 @@ Route::name('user.')->group(function() {
         Route::put('profile/models/{id}', [FileUploadController::class, 'updateModel'])->name('file.updateModel');
         Route::get('profile/download-csv', [FileUploadController::class, 'downloadCsv'])->name('file.downloadCsv');
         Route::get('profile/export-pdf', [FileUploadController::class, 'exportPdf'])->name('file.exportPdf');
+        Route::post('profile/checkmodels', [FileUploadController::class, 'checkModels'])->name('file.checkModels');
 
         Route::get('/admin/chats', [ChatController::class, 'index'])->name('chats.index');
         Route::get('/admin/chats/{chat_id}', [ChatController::class, 'show'])->name('chats.show');
