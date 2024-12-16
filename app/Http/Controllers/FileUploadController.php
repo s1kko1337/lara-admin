@@ -111,17 +111,17 @@ class FileUploadController extends Controller
         public function listModels(Request $request)
     {
         $query = Work::where('modeler_id', Auth::id());
-    
+
         if ($request->filled('search_id')) {
             $query->where('id', $request->input('search_id'));
         }
-    
+
         if ($request->filled('search_name')) {
             $query->where('model_name', 'like', '%' . $request->input('search_name') . '%');
         }
-    
+
         $models = $query->get();
-    
+
         return view('upload-file', compact('models'));
     }
 
@@ -308,7 +308,6 @@ class FileUploadController extends Controller
             if (($handle = fopen($path, 'r')) !== false) {
                 $header = fgetcsv($handle, 1000, ';');
     
-                // Remove BOM from the first header field, if present
                 if ($header && count($header) > 0) {
                     $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', $header[0]);
                 }

@@ -52,7 +52,6 @@
 
             newMessages.forEach(message => {
                 if (!loadedMessageIds.has(message.id)) {
-                    // Преобразуем дату и время в нужный формат
                     const createdAt = new Date(message.created_at);
                     const formattedDate = `${createdAt.getFullYear()}-${String(createdAt.getMonth() + 1).padStart(2, '0')}-${String(createdAt.getDate()).padStart(2, '0')} ${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}:${String(createdAt.getSeconds()).padStart(2, '0')}`;
 
