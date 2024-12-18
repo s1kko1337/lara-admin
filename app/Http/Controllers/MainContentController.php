@@ -43,48 +43,70 @@ class MainContentController extends Controller
         ->count('chat_id');
         $uniqueIdCountActive = DB::table('messages_stat')
         ->distinct()->where('id_user',  auth()->id())
-        ->where('chat_status', 'active') // Исправлено на 'chat_status'
+        ->where('chat_status', 'active') 
         ->count('chat_id');
     
     $uniqueIdCountInactive = DB::table('messages_stat')
         ->distinct()->where('id_user',  auth()->id())
-        ->where('chat_status', 'inactive') // Исправлено на 'chat_status'
+        ->where('chat_status', 'inactive') 
         ->count('chat_id');
     
         $res = [$uniqueIdCount,$uniqueIdCountActive,$uniqueIdCountInactive];
         return $res;
     }
 
+    public function getStats(Request $request)
+    {
+        $timeRange = $request->input('timeRange', 'all'); 
+        $statType = $request->input('statType', 'chats'); 
+    
+        switch ($timeRange) {
+            case 'day':
+                $startDate = now()->startOfDay();
+                break;
+            case 'week':
+                $startDate = now()->startOfWeek();
+                break;
+            case 'month':
+                $startDate = now()->startOfMonth();
+                break;
+            default:
+                $startDate = null; 
+                break;
+        }
+    
+        if ($statType === 'chats') {
+            $query = DB::table('messages_stat')->where('id_user', auth()->id());
+    
+            if ($startDate) {
+                $query->where('created_at', '>=', $startDate);
+            }
+    
+            $stats = $query->select('chat_id', DB::raw('COUNT(*) as message_count'))
+                ->groupBy('chat_id')
+                ->get();
+        } elseif ($statType === 'models') {
+            $query = DB::table('works')->where('modeler_id', auth()->id());
+    
+            if ($startDate) {
+                $query->where('created_at', '>=', $startDate);
+            }
+    
+            $stats = $query->select('model_name', 'views')
+                ->get();
 
-public function getChatStats(Request $request)
-{
-    $timeRange = $request->input('timeRange', 'all'); 
+        } elseif ($statType === 'profile') {
+            $totalViews = DB::table('portfolios')
+            ->where('id', auth()->id())
+            ->select('views')->get();
 
-    switch ($timeRange) {
-        case 'day':
-            $startDate = now()->startOfDay();
-            break;
-        case 'week':
-            $startDate = now()->startOfWeek();
-            break;
-        case 'month':
-            $startDate = now()->startOfMonth();
-            break;
-        default:
-            $startDate = null; 
-            break;
+            $stats = [
+ 'value' => $totalViews
+            ];
+        } else {
+            $stats = [];
+        }
+    
+        return response()->json($stats);
     }
-
-    $query = DB::table('messages_stat')->where('id_user',  auth()->id());
-
-    if ($startDate) {
-        $query->where('created_at', '>=', $startDate);
-    }
-
-    $chatStats = $query->select('chat_id', DB::raw('COUNT(*) as message_count'))
-        ->groupBy('chat_id')
-        ->get();
-
-    return response()->json($chatStats);
-}
 }

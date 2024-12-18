@@ -35,13 +35,6 @@ Route::name('user.')->group(function() {
         Route::post('/profile/update-portfolio', [ProfileController::class, 'updatePortfolio'])->name('profile.updatePortfolio');
         Route::delete('/profile/delete-portfolio', [ProfileController::class, 'deletePortfolio'])->name('profile.deletePortfolio');    
 
-        // Route::get('/admintables', [AdminTablesController::class, 'showTables'])->name('admintables');
-        // Route::get('/admintables/{tableName}/edit', [AdminTablesController::class, 'editTable'])->name('admintables.edit');
-        // Route::put('/admintables/{tableName}/update/{id}', [AdminTablesController::class, 'updateTable'])->name('admintables.update');
-        // Route::get('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->name('admintables.add');
-        // Route::post('/admintables/{tableName}/edit/add', [AdminTablesController::class, 'addTable'])->name('admintables.add');
-        // Route::delete('/admintables/{tableName}/delete/{id}', [AdminTablesController::class, 'destroy'])->name('admintables.delete');
-
         Route::post('/profile/edit-name', [ProfileController::class, 'editName'])->name('profile.editName');
         Route::post('/profile/edit-email', [ProfileController::class, 'editEmail'])->name('profile.editEmail');
         Route::get('/get-updated-users', [ProfileController::class, 'getUpdatedUsers'])->name('admin.get.updated.users');
@@ -74,7 +67,7 @@ Route::name('user.')->group(function() {
         Route::delete('/admin/chats/delete/{chat_id}', [ChatController::class, 'deleteChat'])->name('chats.delete');    
         Route::get('/admin/chats/get-updated-chats', [ChatController::class, 'getUpdatedChats'])->name('chats.getUpdatedChats');
         Route::get('/download-model/{id}', [FileUploadController::class, 'downloadModel'])->name('download.model');
-        Route::get('/chat-stats', [MainContentController::class, 'getChatStats'])->name('chat.stats');
+        Route::get('/chat-stats', [MainContentController::class, 'getStats'])->name('chat.stats');
         Route::get('/logout', function() {
             Auth::logout();
             return redirect(route('user.login'));
