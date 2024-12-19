@@ -27,8 +27,6 @@ class MainContentController extends Controller
     {
         try {
             $ftpDisk = Storage::disk('ftp');
-           // $files = $ftpDisk->files('/upload');
-            //return response()->json(['success' => true, 'files' => $files]);
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'error' => $e->getMessage()]);

@@ -1,1 +1,1 @@
-CRUD Laravel project
+UI course project

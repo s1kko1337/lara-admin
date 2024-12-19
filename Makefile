@@ -7,7 +7,10 @@ install:
 	@$(MAKE) -s composer-install
 
 restart: down up
+
 up: docker-up
+	@npm run dev
+
 down: docker-down
 
 ps:
