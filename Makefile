@@ -20,6 +20,7 @@ get-pwd:
 	echo $(PWD)
 
 docker-up:
+	@sudo systemctl stop docker.socket
 	@docker-compose -p ${INDEX} up -d
 
 docker-down:
